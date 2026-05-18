@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.next/
+.turbo/
+*.env
+!.env.example
+*.log
+coverage/
+.DS_Store
+
+# Docker data volumes (bind mounts) — exclude content, keep dirs
+deploy/data/postgres/*
+deploy/data/mongodb/*
+deploy/data/redis/*
+deploy/data/minio/*
+deploy/data/kafka/*
+deploy/data/zookeeper/*
+deploy/data/qdrant/*
+deploy/data/clickhouse/*
+!deploy/data/**/.gitkeep

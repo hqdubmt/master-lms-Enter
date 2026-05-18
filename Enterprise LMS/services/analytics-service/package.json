@@ -1,0 +1,25 @@
+{
+  "name": "@lms/analytics-service",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@lms/types": "workspace:*",
+    "@lms/utils": "workspace:*",
+    "fastify": "^4.27.0",
+    "@fastify/cors": "^9.0.0",
+    "@clickhouse/client": "^1.0.0",
+    "kafkajs": "^2.2.4",
+    "ioredis": "^5.3.2",
+    "jsonwebtoken": "^9.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "tsx": "^4.11.0",
+    "@types/jsonwebtoken": "^9.0.0"
+  }
+}

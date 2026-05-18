@@ -1,0 +1,229 @@
+// Multi-tenant Enterprise LMS — PostgreSQL schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Run: pnpm db:seed (from packages/database)
+// or:  cd packages/database && npx prisma db seed
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Tenant ──────────────────────────────────────────────
+
+model School {
+  id        Int      @id @default(autoincrement())
+  name      String
+  domain    String?  @unique
+  plan      Plan     @default(FREE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users   User[]
+  courses Course[]
+}
+
+enum Plan {
+  FREE
+  STARTER
+  PRO
+  ENTERPRISE
+}
+
+// ─── Auth ────────────────────────────────────────────────
+
+model User {
+  id        Int      @id @default(autoincrement())
+  schoolId  Int
+  email     String
+  password  String
+  role      Role     @default(STUDENT)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school         School          @relation(fields: [schoolId], references: [id])
+  profile        UserProfile?
+  enrollments    Enrollment[]
+  refreshTokens  RefreshToken[]
+  auditLogs      AuditLog[]
+
+  @@unique([schoolId, email])
+  @@index([schoolId])
+}
+
+enum Role {
+  SUPER_ADMIN
+  SCHOOL_ADMIN
+  TEACHER
+  STUDENT
+  PARENT
+}
+
+model UserProfile {
+  id          Int     @id @default(autoincrement())
+  userId      Int     @unique
+  displayName String?
+  avatarUrl   String?
+  phone       String?
+  bio         String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ─── RBAC ────────────────────────────────────────────────
+
+model Permission {
+  id     Int    @id @default(autoincrement())
+  action String // e.g. "course:read", "lesson:write"
+  roles  Role[]
+
+  @@unique([action])
+}
+
+// ─── Courses & Lessons ───────────────────────────────────
+
+model Course {
+  id          Int          @id @default(autoincrement())
+  schoolId    Int
+  title       String
+  slug        String
+  description String?
+  thumbnailUrl String?
+  status      CourseStatus @default(DRAFT)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  school      School       @relation(fields: [schoolId], references: [id])
+  modules     Module[]
+  enrollments Enrollment[]
+
+  @@unique([schoolId, slug])
+  @@index([schoolId])
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Module {
+  id       Int     @id @default(autoincrement())
+  courseId Int
+  title    String
+  order    Int
+  lessons  Lesson[]
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+}
+
+model Lesson {
+  id          Int    @id @default(autoincrement())
+  moduleId    Int
+  title       String
+  order       Int
+  contentType LessonContentType @default(TEXT)
+
+  module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@index([moduleId])
+}
+
+enum LessonContentType {
+  TEXT
+  VIDEO
+  QUIZ
+  INTERACTIVE
+}
+
+model Enrollment {
+  id         Int              @id @default(autoincrement())
+  userId     Int
+  courseId   Int
+  status     EnrollmentStatus @default(ACTIVE)
+  enrolledAt DateTime         @default(now())
+  completedAt DateTime?
+
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  DROPPED
+}
+
+// ─── Billing ─────────────────────────────────────────────
+
+model Subscription {
+  id        Int                @id @default(autoincrement())
+  schoolId  Int                @unique
+  plan      Plan
+  status    SubscriptionStatus @default(ACTIVE)
+  startDate DateTime
+  endDate   DateTime?
+  createdAt DateTime           @default(now())
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+}
+
+// ─── Gamification ────────────────────────────────────────
+
+model UserPoints {
+  id       Int @id @default(autoincrement())
+  userId   Int @unique
+  total    Int @default(0)
+  level    Int @default(1)
+}
+
+model Badge {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String
+  iconUrl     String
+}
+
+// ─── Audit ───────────────────────────────────────────────
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  action    String
+  resource  String
+  resourceId String?
+  meta      Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+}
