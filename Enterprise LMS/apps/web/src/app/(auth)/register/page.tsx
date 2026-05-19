@@ -10,14 +10,14 @@ import { authApi } from "@/shared/api/auth.api";
 import { useAuthStore } from "@/shared/store/auth.store";
 
 const registerSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
+  name: z.string().min(2, "Tên phải có ít nhất 2 ký tự"),
+  email: z.string().email("Địa chỉ email không hợp lệ"),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Must contain at least one uppercase letter")
-    .regex(/[0-9]/, "Must contain at least one number"),
-  schoolName: z.string().min(2, "School name must be at least 2 characters"),
+    .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+    .regex(/[A-Z]/, "Phải có ít nhất một chữ hoa")
+    .regex(/[0-9]/, "Phải có ít nhất một chữ số"),
+  schoolName: z.string().min(2, "Tên trường phải có ít nhất 2 ký tự"),
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -45,7 +45,7 @@ export default function RegisterPage() {
       const message =
         err instanceof Error
           ? err.message
-          : "Registration failed. Please try again.";
+          : "Đăng ký thất bại. Vui lòng thử lại.";
       setServerError(message);
     }
   };
@@ -53,7 +53,7 @@ export default function RegisterPage() {
   return (
     <div>
       <h2 className="text-xl font-semibold text-gray-800 mb-6">
-        Create your account
+        Tạo tài khoản của bạn
       </h2>
 
       {serverError && (
@@ -65,12 +65,12 @@ export default function RegisterPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Full Name
+            Họ và tên
           </label>
           <input
             {...register("name")}
             type="text"
-            placeholder="John Doe"
+            placeholder="Nguyễn Văn A"
             autoComplete="name"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
           />
@@ -86,7 +86,7 @@ export default function RegisterPage() {
           <input
             {...register("email")}
             type="email"
-            placeholder="you@school.com"
+            placeholder="ban@truong.edu.vn"
             autoComplete="email"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
           />
@@ -97,7 +97,7 @@ export default function RegisterPage() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Password
+            Mật khẩu
           </label>
           <input
             {...register("password")}
@@ -115,12 +115,12 @@ export default function RegisterPage() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            School Name
+            Tên trường
           </label>
           <input
             {...register("schoolName")}
             type="text"
-            placeholder="Greenfield Academy"
+            placeholder="Trường THPT ABC"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
           />
           {errors.schoolName && (
@@ -156,21 +156,21 @@ export default function RegisterPage() {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                 />
               </svg>
-              Creating account...
+              Đang tạo tài khoản...
             </span>
           ) : (
-            "Create account"
+            "Tạo tài khoản"
           )}
         </button>
       </form>
 
       <p className="mt-6 text-center text-sm text-gray-500">
-        Already have an account?{" "}
+        Đã có tài khoản?{" "}
         <Link
           href="/login"
           className="text-primary-600 hover:text-primary-700 font-medium"
         >
-          Sign in
+          Đăng nhập
         </Link>
       </p>
     </div>

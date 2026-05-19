@@ -36,7 +36,7 @@ export class JwtService {
     if (typeof decoded === "string") {
       throw new Error("Invalid access token");
     }
-    return decoded as JwtPayload;
+    return decoded as unknown as JwtPayload;
   }
 
   verifyRefreshToken(token: string): { sub: number } {

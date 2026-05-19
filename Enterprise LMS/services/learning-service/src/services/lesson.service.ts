@@ -9,7 +9,7 @@ import type { ContentBlockInput, CreateQuizInput } from "../schemas/learning.sch
 export const LessonService = {
   // ─── Content ───────────────────────────────────────────
 
-  async getContent(lessonId: number, schoolId: number) {
+  async getContent(lessonId: number, schoolId: number): Promise<{ lesson: unknown; content: unknown } | null> {
     const lesson = await prisma.lesson.findUnique({
       where: { id: lessonId },
       include: {
@@ -34,7 +34,7 @@ export const LessonService = {
     lessonId: number,
     schoolId: number,
     blocks: ContentBlockInput[]
-  ) {
+  ): Promise<unknown> {
     // Verify lesson belongs to school
     const lesson = await prisma.lesson.findUnique({
       where: { id: lessonId },
@@ -62,7 +62,7 @@ export const LessonService = {
     lessonId: number,
     courseId: number,
     schoolId: number
-  ) {
+  ): Promise<unknown> {
     // Verify enrollment
     const enrollment = await prisma.enrollment.findUnique({
       where: { userId_courseId: { userId, courseId } },
@@ -91,7 +91,7 @@ export const LessonService = {
     return progress;
   },
 
-  async checkCourseCompletion(userId: number, courseId: number) {
+  async checkCourseCompletion(userId: number, courseId: number): Promise<void> {
     const course = await prisma.course.findUnique({
       where: { id: courseId },
       include: {
@@ -123,7 +123,7 @@ export const LessonService = {
 
   // ─── Quiz ──────────────────────────────────────────────
 
-  async saveQuiz(lessonId: number, schoolId: number, data: CreateQuizInput) {
+  async saveQuiz(lessonId: number, schoolId: number, data: CreateQuizInput): Promise<unknown> {
     const lesson = await prisma.lesson.findUnique({
       where: { id: lessonId },
       include: {
@@ -141,7 +141,7 @@ export const LessonService = {
     );
   },
 
-  async getQuiz(lessonId: number, schoolId: number, includeAnswers = false) {
+  async getQuiz(lessonId: number, schoolId: number, includeAnswers = false): Promise<unknown> {
     const lesson = await prisma.lesson.findUnique({
       where: { id: lessonId },
       include: {

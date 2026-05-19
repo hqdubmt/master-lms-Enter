@@ -24,7 +24,7 @@ export async function requireAuth(
 
   try {
     const secret = process.env.JWT_SECRET ?? "";
-    const decoded = jwt.verify(token, secret) as JwtPayload;
+    const decoded = jwt.verify(token, secret) as unknown as JwtPayload;
     request.user = decoded;
   } catch {
     reply.code(401).send(fail("Unauthorized: token is invalid or expired"));

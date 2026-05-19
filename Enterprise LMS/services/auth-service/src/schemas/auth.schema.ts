@@ -25,7 +25,22 @@ export const UpdateUserSchema = z.object({
   role: z
     .enum(["SUPER_ADMIN", "SCHOOL_ADMIN", "TEACHER", "STUDENT", "PARENT"])
     .optional(),
+  isActive: z.boolean().optional(),
 });
+
+export const CreateUserByAdminSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters").max(128),
+  role: z.enum(["SCHOOL_ADMIN", "TEACHER", "STUDENT"]).default("STUDENT"),
+});
+
+export const BulkCreateUserSchema = z.object({
+  users: z.array(CreateUserByAdminSchema).min(1).max(200),
+});
+
+export type CreateUserByAdminInput = z.infer<typeof CreateUserByAdminSchema>;
+export type BulkCreateUserInput = z.infer<typeof BulkCreateUserSchema>;
 
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;

@@ -7,8 +7,11 @@ import { RoomService } from "./services/room.service";
 import { PubSubService } from "./services/pubsub.service";
 import { createRealtimeRoutes } from "./routes/realtime";
 
-declare module "fastify" {
-  interface FastifyRequest { user: JwtPayload; }
+declare module "@fastify/jwt" {
+  interface FastifyJWT {
+    payload: JwtPayload;
+    user: JwtPayload;
+  }
 }
 
 async function main() {

@@ -15,6 +15,11 @@ const nextConfig = {
         source: "/api/auth/:path*",
         destination: "http://localhost:3001/api/auth/:path*",
       },
+      // User management (auth service)
+      {
+        source: "/api/users/:path*",
+        destination: "http://localhost:3001/api/users/:path*",
+      },
       // Learning Service :3002
       {
         source: "/api/learning/:path*",

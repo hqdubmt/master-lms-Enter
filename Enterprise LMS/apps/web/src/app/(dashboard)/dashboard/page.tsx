@@ -10,7 +10,7 @@ import { Card } from "@/widgets/Card";
 export default function DashboardPage() {
   const user = useAuthStore((s) => s.user);
   const displayName =
-    user?.profile?.displayName ?? user?.email?.split("@")[0] ?? "there";
+    user?.profile?.displayName ?? user?.email?.split("@")[0] ?? "bạn";
 
   const { data: enrollments = [], isLoading: enrollmentsLoading } = useQuery({
     queryKey: ["my-enrollments"],
@@ -34,27 +34,26 @@ export default function DashboardPage() {
     <div className="p-6 space-y-6">
       {/* Welcome banner */}
       <div className="bg-gradient-to-r from-primary-600 to-indigo-600 rounded-2xl p-6 text-white">
-        <h2 className="text-2xl font-bold">Welcome back, {displayName}!</h2>
+        <h2 className="text-2xl font-bold">Chào mừng trở lại, {displayName}!</h2>
         <p className="mt-1 text-primary-100">
-          Continue your learning journey. You have{" "}
+          Tiếp tục hành trình học tập. Bạn có{" "}
           <span className="font-semibold text-white">
             {enrollments.length - completedCount}
           </span>{" "}
-          active course{enrollments.length - completedCount !== 1 ? "s" : ""}{" "}
-          in progress.
+          khóa học đang học.
         </p>
         <div className="mt-4 flex gap-3">
           <Link
             href="/courses"
             className="px-4 py-2 bg-white text-primary-700 text-sm font-medium rounded-lg hover:bg-primary-50 transition-colors"
           >
-            Browse Courses
+            Xem khóa học
           </Link>
           <Link
             href="/ai"
             className="px-4 py-2 bg-primary-700 text-white text-sm font-medium rounded-lg hover:bg-primary-800 transition-colors"
           >
-            Ask AI Tutor
+            Hỏi Gia sư AI
           </Link>
         </div>
       </div>
@@ -62,9 +61,9 @@ export default function DashboardPage() {
       {/* Stats row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card
-          title="Enrolled Courses"
+          title="Khóa học đã đăng ký"
           value={enrollmentsLoading ? "-" : enrollments.length}
-          description="Total enrollments"
+          description="Tổng số đăng ký"
           icon={
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -72,9 +71,9 @@ export default function DashboardPage() {
           }
         />
         <Card
-          title="Completed"
+          title="Đã hoàn thành"
           value={enrollmentsLoading ? "-" : completedCount}
-          description="Courses finished"
+          description="Khóa học đã xong"
           icon={
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
@@ -82,9 +81,9 @@ export default function DashboardPage() {
           }
         />
         <Card
-          title="Points Earned"
+          title="Điểm tích lũy"
           value={stats?.points ?? 0}
-          description={`Level ${stats?.level ?? 1}`}
+          description={`Cấp độ ${stats?.level ?? 1}`}
           icon={
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -92,9 +91,9 @@ export default function DashboardPage() {
           }
         />
         <Card
-          title="Global Rank"
+          title="Xếp hạng toàn cầu"
           value={stats?.rank ? `#${stats.rank}` : "—"}
-          description="On leaderboard"
+          description="Trên bảng xếp hạng"
           icon={
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -106,27 +105,27 @@ export default function DashboardPage() {
       {/* Recent courses */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h3 className="font-semibold text-gray-900">Recent Courses</h3>
+          <h3 className="font-semibold text-gray-900">Khóa học gần đây</h3>
           <Link
             href="/courses"
             className="text-sm text-primary-600 hover:text-primary-700 font-medium"
           >
-            View all
+            Xem tất cả
           </Link>
         </div>
         <div className="divide-y divide-gray-50">
           {enrollmentsLoading ? (
             <div className="px-6 py-8 text-center text-gray-400 text-sm">
-              Loading...
+              Đang tải...
             </div>
           ) : recentEnrollments.length === 0 ? (
             <div className="px-6 py-8 text-center">
-              <p className="text-gray-400 text-sm">No courses yet.</p>
+              <p className="text-gray-400 text-sm">Chưa có khóa học nào.</p>
               <Link
                 href="/courses"
                 className="mt-2 inline-block text-sm text-primary-600 hover:text-primary-700 font-medium"
               >
-                Browse courses to get started
+                Khám phá khóa học để bắt đầu
               </Link>
             </div>
           ) : (
@@ -142,11 +141,11 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 truncate">
-                    {enrollment.course?.title ?? `Course #${enrollment.courseId}`}
+                    {enrollment.course?.title ?? `Khóa học #${enrollment.courseId}`}
                   </p>
                   <p className="text-xs text-gray-400">
-                    Enrolled{" "}
-                    {new Date(enrollment.enrolledAt).toLocaleDateString()}
+                    Đã đăng ký{" "}
+                    {new Date(enrollment.enrolledAt).toLocaleDateString("vi-VN")}
                   </p>
                 </div>
                 <span
@@ -158,13 +157,13 @@ export default function DashboardPage() {
                       : "bg-gray-100 text-gray-600"
                   }`}
                 >
-                  {enrollment.status}
+                  {enrollment.status === "COMPLETED" ? "Hoàn thành" : enrollment.status === "ACTIVE" ? "Đang học" : enrollment.status}
                 </span>
                 <Link
                   href={`/courses/${enrollment.courseId}`}
                   className="text-sm text-primary-600 hover:text-primary-700 font-medium ml-2"
                 >
-                  Continue
+                  Tiếp tục
                 </Link>
               </div>
             ))
@@ -174,13 +173,13 @@ export default function DashboardPage() {
 
       {/* Quick actions */}
       <div>
-        <h3 className="font-semibold text-gray-900 mb-3">Quick Actions</h3>
+        <h3 className="font-semibold text-gray-900 mb-3">Thao tác nhanh</h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: "AI Tutor", href: "/ai", emoji: "🤖" },
-            { label: "Join Classroom", href: "/classroom", emoji: "🎓" },
-            { label: "Leaderboard", href: "/rewards", emoji: "🏆" },
-            { label: "All Courses", href: "/courses", emoji: "📚" },
+            { label: "Gia sư AI", href: "/ai", emoji: "🤖" },
+            { label: "Vào lớp học", href: "/classroom", emoji: "🎓" },
+            { label: "Bảng xếp hạng", href: "/rewards", emoji: "🏆" },
+            { label: "Tất cả khóa học", href: "/courses", emoji: "📚" },
           ].map((action) => (
             <Link
               key={action.href}

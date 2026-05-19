@@ -73,9 +73,11 @@ export interface LessonWithContent extends Lesson {
 }
 
 export interface QuizAnswer {
-  questionId: number;
-  selectedOption: number;
+  questionIndex: number;
+  yourAnswer: number;
+  correctAnswer: number;
   isCorrect: boolean;
+  explanation?: string;
 }
 
 export interface QuizQuestion {
@@ -90,9 +92,10 @@ export interface Quiz {
 
 export interface QuizResult {
   score: number;
-  maxScore: number;
-  percentage: number;
-  answers: QuizAnswer[];
+  correct: number;
+  total: number;
+  passed: boolean;
+  results: QuizAnswer[];
 }
 
 export interface Enrollment {

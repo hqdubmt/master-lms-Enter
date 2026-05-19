@@ -36,7 +36,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Enterprise LMS</h1>
-          <p className="text-sm text-gray-500 mt-1">AI-powered Learning Management System</p>
+          <p className="text-sm text-gray-500 mt-1">Hệ thống Quản lý Học tập hỗ trợ AI</p>
         </div>
         <div className="bg-white rounded-2xl shadow-xl p-8">{children}</div>
       </div>

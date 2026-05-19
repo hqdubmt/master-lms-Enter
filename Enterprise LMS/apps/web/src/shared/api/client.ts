@@ -18,7 +18,9 @@ function processQueue(error: unknown, token: string | null = null) {
 }
 
 export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  baseURL: typeof window !== "undefined"
+    ? ""
+    : (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",

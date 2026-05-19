@@ -56,15 +56,6 @@ export function createTranscodeWorker(): Worker<TranscodeJobData, TranscodeJobRe
     {
       connection: redis,
       concurrency: 2,
-      defaultJobOptions: {
-        attempts: 3,
-        backoff: {
-          type: "exponential",
-          delay: 5000,
-        },
-        removeOnComplete: { count: 100 },
-        removeOnFail: { count: 200 },
-      },
     }
   );
 

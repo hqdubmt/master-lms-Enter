@@ -2,13 +2,13 @@ import { Schema, model, Document } from "mongoose";
 
 // ─── LessonContent (rich content blocks) ─────────────────
 
-interface ILessonBlock {
+export interface ILessonBlock {
   type: "text" | "video" | "embed" | "quiz";
   content: unknown;
   order: number;
 }
 
-interface ILessonContent extends Document {
+export interface ILessonContent extends Document {
   lessonId: number;
   schoolId: number;
   blocks: ILessonBlock[];
@@ -47,14 +47,14 @@ export const LessonContent = model<ILessonContent>(
 
 // ─── QuizContent ─────────────────────────────────────────
 
-interface IQuizQuestion {
+export interface IQuizQuestion {
   text: string;
   options: string[];
   correctIndex: number;
   explanation?: string;
 }
 
-interface IQuizContent extends Document {
+export interface IQuizContent extends Document {
   lessonId: number;
   schoolId: number;
   questions: IQuizQuestion[];
@@ -87,7 +87,7 @@ export const QuizContent = model<IQuizContent>("QuizContent", QuizContentSchema)
 
 // ─── UserProgress ─────────────────────────────────────────
 
-interface IUserProgress extends Document {
+export interface IUserProgress extends Document {
   userId: number;
   lessonId: number;
   courseId: number;

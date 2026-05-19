@@ -10,9 +10,9 @@ import { authApi } from "@/shared/api/auth.api";
 import { useAuthStore } from "@/shared/store/auth.store";
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  schoolId: z.coerce.number().int().positive("School ID must be a positive number"),
+  email: z.string().email("Địa chỉ email không hợp lệ"),
+  password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+  schoolId: z.coerce.number().int().positive("Mã trường học phải là số dương"),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -39,7 +39,7 @@ export default function LoginPage() {
       router.replace("/dashboard");
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Login failed. Please try again.";
+        err instanceof Error ? err.message : "Đăng nhập thất bại. Vui lòng thử lại.";
       setServerError(message);
     }
   };
@@ -47,7 +47,7 @@ export default function LoginPage() {
   return (
     <div>
       <h2 className="text-xl font-semibold text-gray-800 mb-6">
-        Sign in to your account
+        Đăng nhập vào tài khoản của bạn
       </h2>
 
       {serverError && (
@@ -65,7 +65,7 @@ export default function LoginPage() {
             {...register("email")}
             type="email"
             autoComplete="email"
-            placeholder="you@school.com"
+            placeholder="ban@truong.edu.vn"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
           />
           {errors.email && (
@@ -75,7 +75,7 @@ export default function LoginPage() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Password
+            Mật khẩu
           </label>
           <input
             {...register("password")}
@@ -93,7 +93,7 @@ export default function LoginPage() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            School ID
+            Mã trường học
           </label>
           <input
             {...register("schoolId")}
@@ -135,21 +135,21 @@ export default function LoginPage() {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                 />
               </svg>
-              Signing in...
+              Đang đăng nhập...
             </span>
           ) : (
-            "Sign in"
+            "Đăng nhập"
           )}
         </button>
       </form>
 
       <p className="mt-6 text-center text-sm text-gray-500">
-        Don&apos;t have an account?{" "}
+        Chưa có tài khoản?{" "}
         <Link
           href="/register"
           className="text-primary-600 hover:text-primary-700 font-medium"
         >
-          Create account
+          Tạo tài khoản
         </Link>
       </p>
     </div>

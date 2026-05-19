@@ -40,13 +40,19 @@ export default function CourseDetailPage() {
   }
 
   if (!course) {
-    return <div className="text-center text-gray-500 mt-20">Course not found.</div>;
+    return <div className="text-center text-gray-500 mt-20">Không tìm thấy khóa học.</div>;
   }
 
   const totalLessons = course.modules?.reduce(
     (acc, m) => acc + (m.lessons?.length ?? 0),
     0
   ) ?? 0;
+
+  const statusLabel: Record<string, string> = {
+    PUBLISHED: "Đã xuất bản",
+    DRAFT: "Bản nháp",
+    ARCHIVED: "Lưu trữ",
+  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -69,20 +75,20 @@ export default function CourseDetailPage() {
                     : "bg-yellow-100 text-yellow-700"
                 }`}
               >
-                {course.status}
+                {statusLabel[course.status] ?? course.status}
               </span>
               <h1 className="text-2xl font-bold text-gray-900">{course.title}</h1>
               {course.description && (
                 <p className="mt-2 text-gray-600">{course.description}</p>
               )}
               <p className="mt-3 text-sm text-gray-500">
-                {course.modules?.length ?? 0} modules · {totalLessons} lessons
+                {course.modules?.length ?? 0} chương · {totalLessons} bài học
               </p>
             </div>
             <div className="flex-shrink-0">
               {isEnrolled ? (
                 <span className="inline-block bg-green-100 text-green-700 text-sm font-medium px-4 py-2 rounded-lg">
-                  Enrolled
+                  Đã đăng ký
                 </span>
               ) : (
                 <button
@@ -90,7 +96,7 @@ export default function CourseDetailPage() {
                   disabled={enrollMutation.isPending}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-5 py-2 rounded-lg transition disabled:opacity-50"
                 >
-                  {enrollMutation.isPending ? "Enrolling..." : "Enroll Now"}
+                  {enrollMutation.isPending ? "Đang đăng ký..." : "Đăng ký ngay"}
                 </button>
               )}
             </div>
@@ -99,7 +105,7 @@ export default function CourseDetailPage() {
       </div>
 
       {/* Curriculum */}
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Curriculum</h2>
+      <h2 className="text-lg font-semibold text-gray-800 mb-4">Chương trình học</h2>
       <div className="space-y-4">
         {course.modules?.map((module) => (
           <div
@@ -109,7 +115,7 @@ export default function CourseDetailPage() {
             <div className="bg-gray-50 px-5 py-3 border-b border-gray-100">
               <h3 className="font-medium text-gray-800">{module.title}</h3>
               <p className="text-xs text-gray-500 mt-0.5">
-                {module.lessons?.length ?? 0} lessons
+                {module.lessons?.length ?? 0} bài học
               </p>
             </div>
             <ul className="divide-y divide-gray-50">
@@ -144,7 +150,7 @@ export default function CourseDetailPage() {
         onClick={() => router.back()}
         className="mt-8 text-sm text-gray-500 hover:text-indigo-600 transition"
       >
-        ← Back to courses
+        ← Quay lại khóa học
       </button>
     </div>
   );

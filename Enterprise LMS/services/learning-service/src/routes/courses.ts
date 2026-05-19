@@ -1,4 +1,4 @@
-import type { FastifyPluginAsync, FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyPluginAsync } from "fastify";
 import { ok, fail } from "@lms/utils";
 import { CourseService } from "../services/course.service.js";
 import { EnrollmentService } from "../services/enrollment.service.js";
@@ -6,7 +6,6 @@ import { requireAuth, requireRole } from "../middleware/requireAuth.js";
 import {
   CreateCourseSchema,
   UpdateCourseSchema,
-  EnrollSchema,
 } from "../schemas/learning.schema.js";
 
 export const courseRoutes: FastifyPluginAsync = async (app) => {
@@ -15,7 +14,7 @@ export const courseRoutes: FastifyPluginAsync = async (app) => {
   app.get(
     "/",
     { preHandler: requireAuth },
-    async (request: FastifyRequest, reply: FastifyReply) => {
+    async (request, reply) => {
       const { schoolId, role } = request.user;
       const publishedOnly = role === "STUDENT" || role === "PARENT";
       const query = request.query as {
@@ -40,7 +39,7 @@ export const courseRoutes: FastifyPluginAsync = async (app) => {
   app.post(
     "/",
     { preHandler: requireRole("SCHOOL_ADMIN", "TEACHER") },
-    async (request: FastifyRequest, reply: FastifyReply) => {
+    async (request, reply) => {
       const { schoolId } = request.user;
       const parsed = CreateCourseSchema.safeParse(request.body);
       if (!parsed.success) {
@@ -58,13 +57,10 @@ export const courseRoutes: FastifyPluginAsync = async (app) => {
   );
 
   // GET /api/courses/:id — get course with modules + lessons
-  app.get(
+  app.get<{ Params: { id: string } }>(
     "/:id",
     { preHandler: requireAuth },
-    async (
-      request: FastifyRequest<{ Params: { id: string } }>,
-      reply: FastifyReply
-    ) => {
+    async (request, reply) => {
       const { schoolId } = request.user;
       const id = parseInt(request.params.id, 10);
       if (isNaN(id)) return reply.code(400).send(fail("Invalid course ID"));
@@ -81,13 +77,10 @@ export const courseRoutes: FastifyPluginAsync = async (app) => {
   );
 
   // PATCH /api/courses/:id — update course (SCHOOL_ADMIN | TEACHER)
-  app.patch(
+  app.patch<{ Params: { id: string } }>(
     "/:id",
     { preHandler: requireRole("SCHOOL_ADMIN", "TEACHER") },
-    async (
-      request: FastifyRequest<{ Params: { id: string } }>,
-      reply: FastifyReply
-    ) => {
+    async (request, reply) => {
       const { schoolId } = request.user;
       const id = parseInt(request.params.id, 10);
       if (isNaN(id)) return reply.code(400).send(fail("Invalid course ID"));
@@ -111,13 +104,10 @@ export const courseRoutes: FastifyPluginAsync = async (app) => {
   );
 
   // DELETE /api/courses/:id — soft delete (SCHOOL_ADMIN only)
-  app.delete(
+  app.delete<{ Params: { id: string } }>(
     "/:id",
     { preHandler: requireRole("SCHOOL_ADMIN") },
-    async (
-      request: FastifyRequest<{ Params: { id: string } }>,
-      reply: FastifyReply
-    ) => {
+    async (request, reply) => {
       const { schoolId } = request.user;
       const id = parseInt(request.params.id, 10);
       if (isNaN(id)) return reply.code(400).send(fail("Invalid course ID"));
@@ -136,13 +126,10 @@ export const courseRoutes: FastifyPluginAsync = async (app) => {
   );
 
   // POST /api/courses/:id/publish — publish (SCHOOL_ADMIN | TEACHER)
-  app.post(
+  app.post<{ Params: { id: string } }>(
     "/:id/publish",
     { preHandler: requireRole("SCHOOL_ADMIN", "TEACHER") },
-    async (
-      request: FastifyRequest<{ Params: { id: string } }>,
-      reply: FastifyReply
-    ) => {
+    async (request, reply) => {
       const { schoolId } = request.user;
       const id = parseInt(request.params.id, 10);
       if (isNaN(id)) return reply.code(400).send(fail("Invalid course ID"));
@@ -161,13 +148,10 @@ export const courseRoutes: FastifyPluginAsync = async (app) => {
   );
 
   // POST /api/courses/:id/enroll — enroll current user
-  app.post(
+  app.post<{ Params: { id: string } }>(
     "/:id/enroll",
     { preHandler: requireAuth },
-    async (
-      request: FastifyRequest<{ Params: { id: string } }>,
-      reply: FastifyReply
-    ) => {
+    async (request, reply) => {
       const { sub: userId, schoolId } = request.user;
       const courseId = parseInt(request.params.id, 10);
       if (isNaN(courseId)) return reply.code(400).send(fail("Invalid course ID"));
@@ -190,7 +174,7 @@ export const courseRoutes: FastifyPluginAsync = async (app) => {
   app.get(
     "/my/enrollments",
     { preHandler: requireAuth },
-    async (request: FastifyRequest, reply: FastifyReply) => {
+    async (request, reply) => {
       const { sub: userId, schoolId } = request.user;
       try {
         const enrollments = await EnrollmentService.getMyEnrollments(
@@ -206,13 +190,10 @@ export const courseRoutes: FastifyPluginAsync = async (app) => {
   );
 
   // GET /api/courses/:id/progress — get user's progress for a course
-  app.get(
+  app.get<{ Params: { id: string } }>(
     "/:id/progress",
     { preHandler: requireAuth },
-    async (
-      request: FastifyRequest<{ Params: { id: string } }>,
-      reply: FastifyReply
-    ) => {
+    async (request, reply) => {
       const { sub: userId } = request.user;
       const courseId = parseInt(request.params.id, 10);
       if (isNaN(courseId))
@@ -228,4 +209,5 @@ export const courseRoutes: FastifyPluginAsync = async (app) => {
       }
     }
   );
+
 };

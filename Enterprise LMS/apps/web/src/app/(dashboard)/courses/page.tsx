@@ -15,6 +15,12 @@ function CourseCard({
   course: Course;
   isEnrolled: boolean;
 }) {
+  const statusLabel: Record<string, string> = {
+    PUBLISHED: "Đã xuất bản",
+    DRAFT: "Bản nháp",
+    ARCHIVED: "Lưu trữ",
+  };
+
   return (
     <Link href={`/courses/${course.id}`}>
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md hover:border-primary-200 transition-all group">
@@ -53,11 +59,11 @@ function CourseCard({
                   : "bg-gray-100 text-gray-600"
               }`}
             >
-              {course.status}
+              {statusLabel[course.status] ?? course.status}
             </span>
             {isEnrolled && (
               <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700">
-                Enrolled
+                Đã đăng ký
               </span>
             )}
           </div>
@@ -74,10 +80,10 @@ function CourseCard({
           )}
           <div className="mt-3 flex items-center justify-between">
             <span className="text-xs text-gray-400">
-              Updated {new Date(course.updatedAt).toLocaleDateString()}
+              Cập nhật {new Date(course.updatedAt).toLocaleDateString("vi-VN")}
             </span>
             <span className="text-sm font-medium text-primary-600 group-hover:text-primary-700">
-              View course →
+              Xem khóa học →
             </span>
           </div>
         </div>
@@ -111,9 +117,9 @@ export default function CoursesPage() {
   const courses = coursesData?.items ?? [];
 
   const tabs: { key: FilterTab; label: string }[] = [
-    { key: "all", label: "All Courses" },
-    { key: "enrolled", label: "Enrolled" },
-    { key: "published", label: "Published" },
+    { key: "all", label: "Tất cả" },
+    { key: "enrolled", label: "Đã đăng ký" },
+    { key: "published", label: "Đã xuất bản" },
   ];
 
   return (
@@ -121,9 +127,9 @@ export default function CoursesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Courses</h2>
+          <h2 className="text-xl font-bold text-gray-900">Khóa học</h2>
           <p className="text-sm text-gray-500 mt-0.5">
-            {coursesData?.total ?? 0} courses available
+            {coursesData?.total ?? 0} khóa học có sẵn
           </p>
         </div>
         <div className="relative">
@@ -142,7 +148,7 @@ export default function CoursesPage() {
           </svg>
           <input
             type="text"
-            placeholder="Search courses..."
+            placeholder="Tìm kiếm khóa học..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 w-64"
@@ -192,7 +198,7 @@ export default function CoursesPage() {
               d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
             />
           </svg>
-          <p className="text-gray-400 text-sm">No courses found.</p>
+          <p className="text-gray-400 text-sm">Không tìm thấy khóa học.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

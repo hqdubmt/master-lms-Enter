@@ -8,8 +8,9 @@ import { courseRoutes } from "./routes/courses";
 import { moduleRoutes } from "./routes/modules";
 import { lessonRoutes } from "./routes/lessons";
 
-declare module "fastify" {
-  interface FastifyRequest {
+declare module "@fastify/jwt" {
+  interface FastifyJWT {
+    payload: JwtPayload;
     user: JwtPayload;
   }
 }

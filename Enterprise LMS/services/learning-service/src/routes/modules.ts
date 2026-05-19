@@ -1,4 +1,4 @@
-import type { FastifyPluginAsync, FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyPluginAsync } from "fastify";
 import { ok, fail } from "@lms/utils";
 import { prisma } from "@lms/database";
 import { requireRole } from "../middleware/requireAuth.js";
@@ -9,13 +9,10 @@ import {
 
 export const moduleRoutes: FastifyPluginAsync = async (app) => {
   // POST /api/courses/:courseId/modules — create module
-  app.post(
+  app.post<{ Params: { courseId: string } }>(
     "/courses/:courseId/modules",
     { preHandler: requireRole("SCHOOL_ADMIN", "TEACHER") },
-    async (
-      request: FastifyRequest<{ Params: { courseId: string } }>,
-      reply: FastifyReply
-    ) => {
+    async (request, reply) => {
       const { schoolId } = request.user;
       const courseId = parseInt(request.params.courseId, 10);
       if (isNaN(courseId)) return reply.code(400).send(fail("Invalid course ID"));
@@ -49,15 +46,10 @@ export const moduleRoutes: FastifyPluginAsync = async (app) => {
   );
 
   // PATCH /api/courses/:courseId/modules/:moduleId — update module
-  app.patch(
+  app.patch<{ Params: { courseId: string; moduleId: string } }>(
     "/courses/:courseId/modules/:moduleId",
     { preHandler: requireRole("SCHOOL_ADMIN", "TEACHER") },
-    async (
-      request: FastifyRequest<{
-        Params: { courseId: string; moduleId: string };
-      }>,
-      reply: FastifyReply
-    ) => {
+    async (request, reply) => {
       const { schoolId } = request.user;
       const courseId = parseInt(request.params.courseId, 10);
       const moduleId = parseInt(request.params.moduleId, 10);
@@ -97,15 +89,10 @@ export const moduleRoutes: FastifyPluginAsync = async (app) => {
   );
 
   // DELETE /api/courses/:courseId/modules/:moduleId — delete module
-  app.delete(
+  app.delete<{ Params: { courseId: string; moduleId: string } }>(
     "/courses/:courseId/modules/:moduleId",
     { preHandler: requireRole("SCHOOL_ADMIN", "TEACHER") },
-    async (
-      request: FastifyRequest<{
-        Params: { courseId: string; moduleId: string };
-      }>,
-      reply: FastifyReply
-    ) => {
+    async (request, reply) => {
       const { schoolId } = request.user;
       const courseId = parseInt(request.params.courseId, 10);
       const moduleId = parseInt(request.params.moduleId, 10);

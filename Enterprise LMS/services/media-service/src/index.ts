@@ -30,9 +30,11 @@ async function main() {
 
   await app.register(mediaRoutes, { prefix: "/api/v1/media" });
 
-  // Ensure MinIO bucket exists
-  await ensureBucket();
-  app.log.info("[media] MinIO bucket ready");
+  // Ensure MinIO bucket exists (non-fatal if MinIO is unavailable at startup)
+  await ensureBucket().catch((err) => {
+    app.log.warn({ err }, "[media] MinIO not available at startup — bucket setup skipped");
+  });
+  app.log.info("[media] MinIO bucket check done");
 
   // Start BullMQ transcode worker
   const worker = createTranscodeWorker();

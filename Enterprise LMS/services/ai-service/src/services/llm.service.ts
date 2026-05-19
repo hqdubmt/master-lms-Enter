@@ -68,7 +68,8 @@ export class LlmService {
       }
     }
 
-    throw new Error("No LLM provider configured. Set OPENAI_API_KEY or GEMINI_API_KEY.");
+    // Demo mode: return a helpful Vietnamese response
+    return this.demoChat(messages);
   }
 
   async embed(text: string): Promise<number[]> {
@@ -87,6 +88,24 @@ export class LlmService {
 
     // Fallback: deterministic hash-based 1536-dim vector
     return this.hashEmbed(text);
+  }
+
+  private demoChat(messages: ChatMessage[]): string {
+    const last = messages[messages.length - 1]?.content ?? "";
+    const lower = last.toLowerCase();
+    if (lower.includes("xin chào") || lower.includes("hello") || lower.includes("hi")) {
+      return "Xin chào! Tôi là Gia sư AI của Enterprise LMS. Tôi có thể giúp bạn giải đáp các câu hỏi học tập, giải thích khái niệm, hoặc luyện tập kiến thức. Bạn muốn học về chủ đề gì hôm nay?";
+    }
+    if (lower.includes("giúp") || lower.includes("help")) {
+      return "Tôi có thể giúp bạn:\n• Giải thích các khái niệm khó trong bài học\n• Trả lời câu hỏi về nội dung khóa học\n• Hướng dẫn cách giải bài tập\n• Cung cấp ví dụ minh họa\n\nHãy đặt câu hỏi cụ thể để tôi hỗ trợ bạn tốt hơn nhé!";
+    }
+    if (lower.includes("toán") || lower.includes("math")) {
+      return "Toán học là nền tảng của nhiều môn học khoa học. Để học tốt toán, bạn cần:\n1. Nắm vững các công thức cơ bản\n2. Luyện tập giải nhiều bài tập đa dạng\n3. Hiểu bản chất thay vì học thuộc lòng\n\nBạn đang gặp khó khăn ở phần nào của toán học?";
+    }
+    if (lower.includes("tiếng anh") || lower.includes("english")) {
+      return "Để học tiếng Anh hiệu quả:\n1. **Nghe**: Nghe podcast, xem phim tiếng Anh mỗi ngày\n2. **Nói**: Luyện phát âm và nói chuyện với người bản ngữ\n3. **Đọc**: Đọc sách, báo tiếng Anh phù hợp với trình độ\n4. **Viết**: Ghi nhật ký bằng tiếng Anh\n\nBạn muốn cải thiện kỹ năng nào nhất?";
+    }
+    return `Câu hỏi của bạn: "${last}"\n\nĐây là chế độ demo (chưa cấu hình API key AI). Để sử dụng đầy đủ tính năng AI, hãy cấu hình OPENAI_API_KEY hoặc GEMINI_API_KEY trong file .env.\n\nTuy nhiên, tôi vẫn có thể hỗ trợ bạn với các câu hỏi cơ bản về học tập. Hãy thử hỏi về toán học, tiếng Anh, hoặc các môn học khác!`;
   }
 
   private hashEmbed(text: string): number[] {

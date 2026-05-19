@@ -7,8 +7,11 @@ import { connectMongo } from "./lib/mongoose";
 import { VectorService } from "./services/vector.service";
 import "./workers/ai.worker";
 
-declare module "fastify" {
-  interface FastifyRequest { user: JwtPayload; }
+declare module "@fastify/jwt" {
+  interface FastifyJWT {
+    payload: JwtPayload;
+    user: JwtPayload;
+  }
 }
 
 async function main() {

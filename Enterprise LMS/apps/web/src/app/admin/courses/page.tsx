@@ -11,6 +11,12 @@ const STATUS_COLORS: Record<string, string> = {
   ARCHIVED: "bg-gray-100 text-gray-600",
 };
 
+const STATUS_LABELS: Record<string, string> = {
+  DRAFT: "Bản nháp",
+  PUBLISHED: "Đã xuất bản",
+  ARCHIVED: "Lưu trữ",
+};
+
 export default function AdminCoursesPage() {
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
@@ -43,14 +49,14 @@ export default function AdminCoursesPage() {
   });
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Courses</h1>
+    <div className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Quản lý khóa học</h1>
         <button
           onClick={() => setShowForm(true)}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition self-start sm:self-auto"
         >
-          + New Course
+          + Tạo khóa học
         </button>
       </div>
 
@@ -58,28 +64,28 @@ export default function AdminCoursesPage() {
       {showForm && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Create Course</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Tạo khóa học mới</h2>
             {formError && (
               <p className="text-sm text-red-600 mb-3">{formError}</p>
             )}
             <div className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tiêu đề</label>
                 <input
                   value={form.title}
                   onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="Course title"
+                  placeholder="Tiêu đề khóa học"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
                 <textarea
                   value={form.description}
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   rows={3}
-                  placeholder="Optional description"
+                  placeholder="Mô tả (tùy chọn)"
                 />
               </div>
             </div>
@@ -88,14 +94,14 @@ export default function AdminCoursesPage() {
                 onClick={() => { setShowForm(false); setFormError(null); }}
                 className="flex-1 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition"
               >
-                Cancel
+                Hủy
               </button>
               <button
                 onClick={() => createMutation.mutate()}
                 disabled={!form.title || createMutation.isPending}
                 className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition disabled:opacity-50"
               >
-                {createMutation.isPending ? "Creating..." : "Create"}
+                {createMutation.isPending ? "Đang tạo..." : "Tạo"}
               </button>
             </div>
           </div>
@@ -109,12 +115,13 @@ export default function AdminCoursesPage() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[500px]">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Title</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Created</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Tiêu đề</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Ngày tạo</th>
                 <th className="px-5 py-3" />
               </tr>
             </thead>
@@ -124,11 +131,11 @@ export default function AdminCoursesPage() {
                   <td className="px-5 py-3 font-medium text-gray-900">{course.title}</td>
                   <td className="px-5 py-3">
                     <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[course.status] ?? ""}`}>
-                      {course.status}
+                      {STATUS_LABELS[course.status] ?? course.status}
                     </span>
                   </td>
                   <td className="px-5 py-3 text-gray-500">
-                    {new Date((course as Course & { createdAt: string }).createdAt).toLocaleDateString()}
+                    {new Date((course as Course & { createdAt: string }).createdAt).toLocaleDateString("vi-VN")}
                   </td>
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-2 justify-end">
@@ -138,16 +145,16 @@ export default function AdminCoursesPage() {
                           disabled={publishMutation.isPending}
                           className="text-xs text-green-600 hover:text-green-700 font-medium"
                         >
-                          Publish
+                          Xuất bản
                         </button>
                       )}
                       <button
                         onClick={() => {
-                          if (confirm(`Delete "${course.title}"?`)) deleteMutation.mutate(course.id);
+                          if (confirm(`Xóa khóa học "${course.title}"?`)) deleteMutation.mutate(course.id);
                         }}
                         className="text-xs text-red-500 hover:text-red-600 font-medium"
                       >
-                        Delete
+                        Xóa
                       </button>
                     </div>
                   </td>
@@ -156,12 +163,13 @@ export default function AdminCoursesPage() {
               {!data?.items.length && (
                 <tr>
                   <td colSpan={4} className="text-center py-12 text-gray-400">
-                    No courses yet. Create one!
+                    Chưa có khóa học nào. Hãy tạo mới!
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

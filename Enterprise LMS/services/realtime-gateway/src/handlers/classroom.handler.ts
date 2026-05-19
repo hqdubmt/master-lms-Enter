@@ -58,7 +58,7 @@ export function createClassroomHandler(
       sendToSocket(socket, msg.payload);
     };
 
-    socket.on("message", async (raw) => {
+    socket.on("message", async (raw: Buffer | ArrayBuffer | Buffer[]) => {
       let event: ClientEvent;
 
       try {
@@ -215,7 +215,7 @@ export function createClassroomHandler(
       await leaveRoom();
     });
 
-    socket.on("error", (err) => {
+    socket.on("error", (err: Error) => {
       app.log.error({ err, userId, roomId: currentRoomId }, "[classroom] WebSocket error");
     });
 
