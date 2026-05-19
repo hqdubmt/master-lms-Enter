@@ -1,0 +1,19 @@
+.git
+.gitignore
+.env
+*.log
+logs/
+
+# Build artifacts (rebuilt inside Docker)
+**/node_modules
+**/.next
+**/dist
+**/.turbo
+**/coverage
+
+# Docker data volumes
+deploy/data/
+
+# Dev tools
+.claude/
+*.md

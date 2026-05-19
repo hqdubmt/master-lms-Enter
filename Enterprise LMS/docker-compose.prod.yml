@@ -1,0 +1,135 @@
+version: "3.9"
+# Production override — adds app services using Docker Hub images
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+x-app-base: &app-base
+  restart: unless-stopped
+  env_file: .env
+  networks:
+    - default
+
+services:
+  # ─── Backend services ────────────────────────────────────────────────────
+  auth-service:
+    <<: *app-base
+    image: hqdu/lms-auth:latest
+    ports: ["3001:3001"]
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/enterprise_lms
+      MONGODB_URI: mongodb://mongodb:27017/enterprise_lms
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis:    { condition: service_healthy }
+
+  learning-service:
+    <<: *app-base
+    image: hqdu/lms-learning:latest
+    ports: ["3002:3002"]
+    environment:
+      PORT: 3002
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/enterprise_lms
+      MONGODB_URI: mongodb://mongodb:27017/enterprise_lms
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+    depends_on:
+      postgres: { condition: service_healthy }
+      mongodb:  { condition: service_healthy }
+
+  ai-service:
+    <<: *app-base
+    image: hqdu/lms-ai:latest
+    ports: ["3003:3003"]
+    environment:
+      PORT: 3003
+      MONGODB_URI: mongodb://mongodb:27017/enterprise_lms
+      REDIS_URL: redis://redis:6379
+      QDRANT_URL: http://qdrant:6333
+      KAFKA_BROKERS: kafka:9092
+    depends_on:
+      mongodb: { condition: service_healthy }
+      qdrant:  { condition: service_healthy }
+
+  analytics-service:
+    <<: *app-base
+    image: hqdu/lms-analytics:latest
+    ports: ["3004:3004"]
+    environment:
+      PORT: 3004
+      CLICKHOUSE_URL: http://clickhouse:8123
+      KAFKA_BROKERS: kafka:9092
+    depends_on:
+      clickhouse: { condition: service_healthy }
+      kafka:      { condition: service_healthy }
+
+  notification-service:
+    <<: *app-base
+    image: hqdu/lms-notification:latest
+    ports: ["3005:3005"]
+    environment:
+      PORT: 3005
+      MONGODB_URI: mongodb://mongodb:27017/enterprise_lms
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+    depends_on:
+      mongodb: { condition: service_healthy }
+      redis:   { condition: service_healthy }
+
+  game-service:
+    <<: *app-base
+    image: hqdu/lms-game:latest
+    ports: ["3006:3006"]
+    environment:
+      PORT: 3006
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/enterprise_lms
+      MONGODB_URI: mongodb://mongodb:27017/enterprise_lms
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis:    { condition: service_healthy }
+
+  media-service:
+    <<: *app-base
+    image: hqdu/lms-media:latest
+    ports: ["3007:3007"]
+    environment:
+      PORT: 3007
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      KAFKA_BROKERS: kafka:9092
+    depends_on:
+      minio: { condition: service_healthy }
+
+  realtime-gateway:
+    <<: *app-base
+    image: hqdu/lms-realtime:latest
+    ports: ["3008:3008"]
+    environment:
+      PORT: 3008
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+    depends_on:
+      redis: { condition: service_healthy }
+      kafka: { condition: service_healthy }
+
+  # ─── Next.js web ─────────────────────────────────────────────────────────
+  web:
+    <<: *app-base
+    image: hqdu/lms-web:latest
+    ports: ["3000:3000"]
+    environment:
+      PORT: 3000
+      AUTH_SERVICE_URL: http://auth-service:3001
+      LEARNING_SERVICE_URL: http://learning-service:3002
+      AI_SERVICE_URL: http://ai-service:3003
+      ANALYTICS_SERVICE_URL: http://analytics-service:3004
+      NOTIFICATION_SERVICE_URL: http://notification-service:3005
+      GAME_SERVICE_URL: http://game-service:3006
+      MEDIA_SERVICE_URL: http://media-service:3007
+      NEXT_PUBLIC_WS_URL: ws://localhost:3008
+    depends_on:
+      - auth-service
+      - learning-service
